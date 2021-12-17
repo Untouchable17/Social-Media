@@ -1,0 +1,14 @@
+{% extends 'blog/layout.html' %}
+
+{% block title %} Удаление Блога {% endblock %}
+
+{% block content %}
+    <div class="features">
+        <form action="{% url 'post_delete_url' slug=post.slug %}" method="post" >
+            {% csrf_token %}
+            <h1>Are you sure you want to delete <b>"{{ post.title|title }}"</b> post ?</h1>
+            <a href="{% url 'posts_list_url' %}">Cancel</a>
+            <button type="submit" name="button" class="btn btn-danger">Удалить :(</button>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,45 @@
+version: "3"
+volumes:
+  pgdata:
+  static:
+  media:
+services:
+  postgresdb:
+    image: postgres:12.4-alpine
+    environment:
+      POSTGRES_USER: some_user
+      POSTGRES_DB: some_db
+      POSTGRES_PASSWORD: some_pass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - static:/opt/app/static
+      - media:/opt/app/media
+    environment:
+      - POSTGRES_USER=some_user
+      - POSTGRES_DB=some_db
+      - POSTGRES_PASSWORD=some_pass
+      - POSTGRES_HOST=postgresdb
+    depends_on:
+      - postgresdb
+    ports:
+      - "8000:8000"
+    command: gunicorn -w 4 blogengine.wsgi -b 0.0.0.0:8000
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    volumes:
+      - static:/opt/app/static
+      - media:/opt/app/media
+    depends_on:
+      - web
+      - postgresdb
+    ports:
+      - "80:80"

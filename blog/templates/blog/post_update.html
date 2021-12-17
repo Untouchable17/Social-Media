@@ -1,0 +1,28 @@
+{% extends 'blog/layout.html' %}
+
+{% block title %}
+    Edit Post
+{% endblock %}
+
+{% block content %}
+    <div class="features">
+        <h1>Форма для редактирования блога</h1>
+        <form method="post" action="{% url 'post_update_url' slug=post.slug %}" enctype="multipart/form-data">
+            {% csrf_token %}
+
+                {% if field.errors %}
+                <div class="alert alert-danger">
+                    {{ field.errors }}
+                </div>
+                {% endif %}
+
+                {% for fields in form %}
+                <div class="form-group">
+                    <p>{{ fields.label }}: </p>{{ fields }}
+                    <div class="form-error">{{ fields.errors }}</div>
+                </div>
+                {% endfor %}
+            <button class="btn btn-success" type="submit">Обновить статью</button>
+        </form>
+    </div>
+{% endblock %}

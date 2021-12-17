@@ -1,0 +1,19 @@
+{% extends 'blog/layout.html' %}
+
+{% block title %}
+    Posts with tag {{ point.title }} tag
+{% endblock %}
+
+{% block content %}
+    <h1 class="mb-5">Posts with "{{ point.title|title }}" tag:</h1>
+
+    {% if point.posts.all %}
+        {% for post in point.posts.all %}
+            {% include 'blog/includes/post_card_template.html' %}
+        {% endfor %}
+    {% else %}
+        <p>Tags don't exist..</p>
+    {% endif %}
+
+{% endblock %}
+

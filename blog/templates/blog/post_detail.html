@@ -1,0 +1,76 @@
+{% extends 'blog/layout.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {{ post_detail_view.title }}
+{% endblock %}
+
+{% block content %}
+    <h1 class="mt-3" style="color: rgba(245, 192, 51, 0.79);">{{ post.title }}</h1>
+    <hr>
+    {% if post.photo %}
+        <p><img class="card-img-top height" src="{{ post.photo.url }}"></p>
+    {% endif %}
+    <hr>
+    <p>{{ post.body }}</p>
+      <p>{{ post.content|safe }}</p>
+    <hr>
+
+    <div class="d-flex flex-row">
+        {% if request.user.is_authenticated %}
+        <form action="{% url 'like' post.pk %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button style="background-color: transparent; border:none; box-shadow:none;" type="submit">
+                <i class="far fa-thumbs-up"> <span>{{ post.likes.all.count }}</span></i>
+            </button>
+        </form>
+        {% else %}
+        <div class="test" style="align-items:center;">
+            <i class="far fa-thumbs-up" style="margin-right:10px;"> <span>{{ post.likes.all.count }}</span></i>
+        </div>
+        {% endif %}
+
+        {% if request.user.is_authenticated %}
+        <form action="{% url 'dislike' post.pk %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button style="background-color: transparent; border:none; box-shadow:none;" type="submit">
+                <i class="far fa-thumbs-down"> <span>{{ post.dislikes.all.count }}</span></i>
+            </button>
+        </form>
+        {% else %}
+            <div class="test">
+                <i class="far fa-thumbs-down"> <span>{{ post.dislikes.all.count }}</span></i>
+            </div>
+        {% endif %}
+    </div>
+
+    <p><strong style="color: rgba(245, 192, 51, 0.79);">Кол-во комментов</strong>: <span class="badge rounded-pill bg-dark" style="color:#fff;">{{ post.comments.count }}</span></p>
+    <div class="row">
+        {% for comment in post.comments.all %}
+            <div class="col-md-12 mt-3 mb-3" style="background: #03081A; box-shadow: 0px 4px 4px rgba(250, 20, 20, 0.25);">
+                 <div class="article-metadata">
+                        <img class="rounded-circle article-img" src="{{ comment.author.profile.image.url }}" style="padding:10px;"><br>
+                    <div class="test_block_test" style="display:flex; justify-content:space-between;">
+                        <a class="mr-2" href="#">{{ comment.author }}</a>
+                        <small class="text-muted">Дата: {{ comment.created_at|date:"Y M | d дня" }}</small>
+                    </div>
+                </div>
+                <p style="color: rgba(255, 255, 255, 0.5);">{{ comment.text }}</p>
+            </div>
+        {% endfor %}
+    </div>
+    <hr>
+    {% if request.user.is_authenticated %}
+        <form action="{% url 'comments:comment-create' content_type='post' object_id=post.id %}" method="POST">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <br>
+            <button class="btn btn-success" type="submit">Добавить комментарий</button>
+        </form>
+    {% else %}
+        <p class="text-center">Оставлять комментарии могут только авторизованные пользователи</p>
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,129 @@
+{% load static %}
+<html>
+   <head>
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" type="text/css" rel="stylesheet">
+      <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+      <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+      <link rel="stylesheet" type="text/css" href="{% static 'css/chat_style.css' %}">
+   </head>
+   <body>
+      <div class="container">
+      <h3 class="text-center" style="margin-top:20px;">Чат с пользователем {{ other_user.username }}</h3>
+      <div class="messaging">
+      <div class="inbox_msg">
+         <div class="inbox_people">
+            <div class="headind_srch">
+               <div class="recent_heading">
+                  <h4>Messages</h4>
+               </div>
+               <div class="srch_bar">
+                  <div class="stylish-input-group">
+                     <input type="text" class="search-bar"  placeholder="Search" >
+                     <span class="input-group-addon">
+                     <button type="button"> <i class="fa fa-search" aria-hidden="true"></i> </button>
+                     </span>
+                  </div>
+               </div>
+            </div>
+            <div class="inbox_chat">
+               {% if messages %}
+               <div class="chat_list">
+                  <div class="chat_people">
+                     <div class="chat_img"> <img class="rounded-circle account-img" src="{{ user.profile.image.url }}"> </div>
+                     <div class="chat_ib">
+                        <h5>{{ user.username }} <span class="chat_date">{{ user.last_login|date:"Y-m-d в H:h" }}</span></h5>
+                        <p>{{ user.messages }}</p>
+                     </div>
+                  </div>
+               </div>
+               {% endif %}
+            </div>
+         </div>
+         <!--			WORK HERE -->
+         <div class="mesgs">
+            <div class="msg_history">
+               <div class="incoming_msg">
+                  <div class="received_msg">
+                     {% for message in messages %}
+                     <hr>
+                     <div class="message {% if message.sender == request.user %}right{% else %}left{% endif %} ">
+                        <img class="rounded-circle account-img" src="{{ message.sender.profile.image.url }}" style="width:50px; height:50px;">
+                        <div class="sent-by">{{ message.sender.username }}</div>
+                        <small style="color:grey;">Дата сообщения: {{ message.date_created }}</small>
+                        <div class="content">{{ message.message }}</div>
+                     </div>
+                     {% endfor %}
+                  </div>
+               </div>
+            </div>
+            <div class="type_msg">
+               <div class="input_msg_write">
+                  <input type="text" class="write_msg" placeholder="Введите сообщение.."  id="message-input">
+                  <button id="send-btn">Отправить<i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="footer" style="text-align:center; margin: 30px 0px;">
+         <small style="color:grey;" class="copyright">Copyright &copy 2021 Blackout Social Media. All Rights Reserved.</small><br>
+         <small style="color:grey;" class="copyright">Property Tyler Blackout</small>
+      </div>
+      <script>
+         let message_send_btn = document.getElementById("send-btn");
+         let message_input = document.getElementById("message-input");
+         function send_message() {
+             let message = message_input.value;
+             if (message === "") {
+                 return;
+             }
+             message_input.value = "";
+             fetch("{% url 'chatroom-ajax' other_user.id %}",
+                 {
+                     method: "POST",
+                     credentials: 'same-origin',
+                     headers: {
+                         "Content-Type": 'application/json',
+                         'X-CSRFToken': '{{ csrf_token }}'
+                     },
+                     body: JSON.stringify(message)
+                 }
+             ).then(e => e.json()).then(messages => {
+                 for (message of messages) {
+                     construct_message(message);
+                 }
+             });
+         }
+
+         function load_messages() {
+             fetch("{% url 'chatroom-ajax' other_user.id %}")
+                 .then(e => e.json())
+                 .then(messages => {
+                     console.log(messages)
+                     for (message of messages) {
+                         construct_message(message);
+                     }
+                 })
+         }
+
+         function construct_message(message){
+             let messages_container = document.querySelector(".messages-area");
+             let class_name = "left"
+             if (message.sent){
+                 class_name = "right"
+             }
+             let div = document.createElement("div");
+             div.classList.add("message", class_name);
+             div.innerHTML = `
+             <div class="sent-by">${ message.sender }</div>
+                 <div class="content">${ message.message }</div>
+             `
+             messages_container.appendChild(div);
+             div.scrollIntoView()
+         }
+         message_send_btn.addEventListener('click', send_message);
+         setInterval(load_messages, 2000);
+      </script>
+	  </div></div>
+   </body>
+</html>

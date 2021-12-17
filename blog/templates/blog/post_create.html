@@ -1,0 +1,26 @@
+{% extends 'blog/layout.html' %}
+
+{% block title %} Добавление Блога {% endblock %}
+
+{% block content %}
+    <div class="features">
+        <h1>Форма для добавления блога</h1>
+        <form action="{% url 'post_create_url' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+                {% if field.errors %}
+                <div class="alert alert-danger">
+                    {{ field.errors }}
+                </div>
+                {% endif %}
+
+                {% for f in form %}
+                <div class="form-group">
+                    <p>{{f.label}}: </p>{{ f }}
+                    <div class="form-error">{{ f.errors }}</div>
+                </div>
+                {% endfor %}
+            <button class="btn btn-success" type="submit">Добавить статью</button>
+        </form>
+    </div>
+{% endblock %}

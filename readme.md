@@ -4,9 +4,8 @@
 #### Инструменты разработки
 
 <ul>
-    <li>Python >= 3.7</li>
-    <li>Django >= 1.1.2 </li>
-    <li>PostGreSQL</li>
+    <li>Python == 3.7</li>
+    <li>Django == +3.х </li>
     <li>NGINX + Gunicorn</li>
 </ul>
 

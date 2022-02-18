@@ -23,5 +23,13 @@
     <li>Подготовьте модели к миграции<pre><code>python manage.py makemigrations</code></pre><br>
     <li>Запустите миграции<pre><code>python manage.py migrate</code></pre><br>
     <li>Создайте суперпользователя<pre><code>python manage.py createsuperuser</code></pre><br>
-    <li>Запустите сайт<pre><code>python manage.py runserver</code></pre><br></li>
 </ol>
+
+#### Запуск на локальном сервере
+
+> Запустите сайт<pre><code>python manage.py runserver</code></pre><br></li>
+
+#### Запуск на продакшане
+
+> В докер файле заполните поля для пользователя в базе данных
+

@@ -4,8 +4,10 @@
 #### Инструменты разработки
 
 <ul>
-    <li>Python == 3.7</li>
-    <li>Django == +3.х </li>
+    <li>Python</li>
+    <li>Django</li>
+    <li>DjangoRestFramework</li>
+    <li>Docker</li>
     <li>NGINX + Gunicorn</li>
 </ul>
 
